@@ -1,0 +1,17 @@
+package com.opaltrace.platform.iam.interfaces.rest.resources;
+
+import com.opaltrace.platform.iam.domain.model.valueobjects.PlanTier;
+import com.opaltrace.platform.iam.domain.model.valueobjects.UserRole;
+import com.opaltrace.platform.iam.domain.model.valueobjects.UserSegment;
+
+public record UserResource(
+        Long id,
+        String email,
+        String fullName,
+        String companyName,
+        String ruc,
+        UserSegment segment,
+        UserRole role,
+        PlanTier planTier,
+        boolean active
+) {}
