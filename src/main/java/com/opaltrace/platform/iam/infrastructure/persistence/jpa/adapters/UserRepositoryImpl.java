@@ -1,0 +1,55 @@
+package com.opaltrace.platform.iam.infrastructure.persistence.jpa.adapters;
+
+import com.opaltrace.platform.iam.domain.model.aggregates.User;
+import com.opaltrace.platform.iam.domain.repositories.UserRepository;
+import com.opaltrace.platform.iam.infrastructure.persistence.jpa.assemblers.UserPersistenceAssembler;
+import com.opaltrace.platform.iam.infrastructure.persistence.jpa.repositories.UserPersistenceRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public class UserRepositoryImpl implements UserRepository {
+
+    private final UserPersistenceRepository userPersistenceRepository;
+
+    public UserRepositoryImpl(UserPersistenceRepository userPersistenceRepository) {
+        this.userPersistenceRepository = userPersistenceRepository;
+    }
+
+    @Override
+    public User save(User user) {
+        var saved = userPersistenceRepository.save(UserPersistenceAssembler.toPersistenceFromDomain(user));
+        return UserPersistenceAssembler.toDomainFromPersistence(saved);
+    }
+
+    @Override
+    public Optional<User> findById(Long id) {
+        return userPersistenceRepository.findById(id)
+                .map(UserPersistenceAssembler::toDomainFromPersistence);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userPersistenceRepository.findByEmail(email)
+                .map(UserPersistenceAssembler::toDomainFromPersistence);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userPersistenceRepository.findAll().stream()
+                .map(UserPersistenceAssembler::toDomainFromPersistence)
+                .toList();
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userPersistenceRepository.existsByEmail(email);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        userPersistenceRepository.deleteById(id);
+    }
+}
