@@ -6,10 +6,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableJpaAuditing
 @SpringBootApplication
-public class OpalTracePlatformApplication {
+public class OpaltracePlatformApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(OpalTracePlatformApplication.class, args);
+        SpringApplication.run(OpaltracePlatformApplication.class, args);
     }
 
 }
