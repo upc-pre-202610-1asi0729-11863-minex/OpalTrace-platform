@@ -47,14 +47,11 @@ public class OpenApiConfiguration {
 
         openApi.servers(List.of(
                 new Server()
+                        .url("https://opaltrace-platform-production.up.railway.app")
+                        .description("Production Environment"),
+                new Server()
                         .url("http://localhost:8080")
-                        .description("Local Development Environment"),
-                new Server()
-                        .url("https://staging-api.opaltrace.com")
-                        .description("Staging Environment"),
-                new Server()
-                        .url("https://api.opaltrace.com")
-                        .description("Production Environment")
+                        .description("Local Development Environment")
         ));
 
         // Add a security scheme
