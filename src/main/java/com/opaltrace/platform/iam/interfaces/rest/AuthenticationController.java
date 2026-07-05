@@ -1,8 +1,13 @@
 package com.opaltrace.platform.iam.interfaces.rest;
 
 import com.opaltrace.platform.iam.application.commandservices.UserCommandService;
+import com.opaltrace.platform.iam.domain.model.commands.ForgotPasswordCommand;
+import com.opaltrace.platform.iam.domain.model.commands.ResetPasswordCommand;
 import com.opaltrace.platform.iam.infrastructure.tokens.jwt.services.TokenService;
 import com.opaltrace.platform.iam.interfaces.rest.resources.AuthenticatedUserResource;
+import com.opaltrace.platform.iam.interfaces.rest.resources.ForgotPasswordResource;
+import com.opaltrace.platform.iam.interfaces.rest.resources.PasswordResetSentResource;
+import com.opaltrace.platform.iam.interfaces.rest.resources.ResetPasswordResource;
 import com.opaltrace.platform.iam.interfaces.rest.resources.SignInResource;
 import com.opaltrace.platform.iam.interfaces.rest.transform.SignInCommandFromResourceAssembler;
 import com.opaltrace.platform.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
@@ -49,6 +54,30 @@ public class AuthenticationController {
             var token = tokenService.generateToken(user);
             return UserResourceFromEntityAssembler.toAuthenticatedResourceFromEntity(user, token);
         });
+        return ResponseEntityAssembler.toResponseEntityFromResult(result, r -> r, HttpStatus.OK);
+    }
+
+    @PostMapping("/forgot-password")
+    @Operation(summary = "Forgot password", description = "Sends a password reset token (returned directly for demo purposes)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Reset token generated"),
+            @ApiResponse(responseCode = "400", description = "Invalid email format")
+    })
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordResource resource) {
+        var result = userCommandService.handle(new ForgotPasswordCommand(resource.email()))
+                .map(token -> new PasswordResetSentResource("If this email is registered, a reset link has been sent", token));
+        return ResponseEntityAssembler.toResponseEntityFromResult(result, r -> r, HttpStatus.OK);
+    }
+
+    @PostMapping("/reset-password")
+    @Operation(summary = "Reset password", description = "Resets user password using a valid reset token")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password reset successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid or expired token, or password does not meet requirements")
+    })
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordResource resource) {
+        var result = userCommandService.handle(new ResetPasswordCommand(resource.token(), resource.newPassword()))
+                .map(userId -> java.util.Map.of("userId", userId, "success", true));
         return ResponseEntityAssembler.toResponseEntityFromResult(result, r -> r, HttpStatus.OK);
     }
 }

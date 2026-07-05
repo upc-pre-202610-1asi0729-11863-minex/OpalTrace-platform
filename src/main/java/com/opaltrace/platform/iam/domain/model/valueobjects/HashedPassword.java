@@ -15,6 +15,10 @@ public class HashedPassword {
     public static HashedPassword fromRaw(String rawPassword) {
         if (rawPassword == null || rawPassword.length() < 8)
             throw new IllegalArgumentException("Password must be at least 8 characters");
+        if (!rawPassword.matches(".*[A-Z].*"))
+            throw new IllegalArgumentException("Password must contain at least one uppercase letter");
+        if (!rawPassword.matches(".*[0-9].*"))
+            throw new IllegalArgumentException("Password must contain at least one number");
         return new HashedPassword(ENCODER.encode(rawPassword));
     }
 

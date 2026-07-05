@@ -9,10 +9,18 @@ import com.opaltrace.platform.shared.application.result.ApplicationError;
 import com.opaltrace.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Service
 public class UserCommandServiceImpl implements UserCommandService {
 
     private final UserRepository userRepository;
+    private final Map<String, PendingReset> pendingResets = new ConcurrentHashMap<>();
+
+    private record PendingReset(String email, Instant expiresAt) {}
 
     public UserCommandServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -89,6 +97,40 @@ public class UserCommandServiceImpl implements UserCommandService {
             return Result.failure(ApplicationError.validationError("change-password", e.getMessage()));
         } catch (Exception e) {
             return Result.failure(ApplicationError.unexpected("change-password", e.getMessage()));
+        }
+    }
+
+    @Override
+    public Result<String, ApplicationError> handle(ForgotPasswordCommand command) {
+        var userOpt = userRepository.findByEmail(command.email());
+        if (userOpt.isEmpty())
+            return Result.success("If this email is registered, a reset link has been sent");
+
+        var token = UUID.randomUUID().toString().replace("-", "");
+        pendingResets.put(token, new PendingReset(command.email(), Instant.now().plusSeconds(900)));
+        return Result.success(token);
+    }
+
+    @Override
+    public Result<Long, ApplicationError> handle(ResetPasswordCommand command) {
+        var entry = pendingResets.get(command.token());
+        if (entry == null || Instant.now().isAfter(entry.expiresAt()))
+            return Result.failure(ApplicationError.validationError("reset-password", "Reset token is invalid or has expired"));
+
+        var userOpt = userRepository.findByEmail(entry.email());
+        if (userOpt.isEmpty())
+            return Result.failure(ApplicationError.notFound("User", entry.email()));
+
+        var user = userOpt.get();
+        try {
+            user.changePassword(HashedPassword.fromRaw(command.newPassword()));
+            userRepository.save(user);
+            pendingResets.remove(command.token());
+            return Result.success(user.getId());
+        } catch (IllegalArgumentException e) {
+            return Result.failure(ApplicationError.validationError("reset-password", e.getMessage()));
+        } catch (Exception e) {
+            return Result.failure(ApplicationError.unexpected("reset-password", e.getMessage()));
         }
     }
 }
