@@ -1,5 +1,7 @@
 package com.opaltrace.platform.mineralextraction.application.internal.commandservices;
 
+import com.opaltrace.platform.iam.domain.model.valueobjects.PlanTier;
+import com.opaltrace.platform.iam.domain.repositories.UserRepository;
 import com.opaltrace.platform.mineralextraction.application.commandservices.MineralBatchCommandService;
 import com.opaltrace.platform.mineralextraction.domain.model.aggregates.MineralBatch;
 import com.opaltrace.platform.mineralextraction.domain.model.commands.*;
@@ -18,15 +20,28 @@ public class MineralBatchCommandServiceImpl implements MineralBatchCommandServic
 
     private final MineralBatchRepository mineralBatchRepository;
     private final AuthorizedZoneRepository authorizedZoneRepository;
+    private final UserRepository userRepository;
 
     public MineralBatchCommandServiceImpl(MineralBatchRepository mineralBatchRepository,
-                                          AuthorizedZoneRepository authorizedZoneRepository) {
+                                          AuthorizedZoneRepository authorizedZoneRepository,
+                                          UserRepository userRepository) {
         this.mineralBatchRepository = mineralBatchRepository;
         this.authorizedZoneRepository = authorizedZoneRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
     public Result<Long, ApplicationError> handle(RegisterMineralBatchCommand command) {
+        if (command.supervisorId() != null) {
+            var userOpt = userRepository.findById(command.supervisorId());
+            if (userOpt.isPresent()) {
+                PlanTier tier = userOpt.get().getPlanTier();
+                if (tier == PlanTier.SILVER) {
+                    return Result.failure(ApplicationError.planTierInsufficient("GOLD"));
+                }
+            }
+        }
+
         var coordinate = new GpsCoordinate(command.latitude(), command.longitude());
         var authorizedZones = authorizedZoneRepository.findAllActive();
         boolean inAuthorizedZone = authorizedZones.stream().anyMatch(z -> z.containsCoordinate(coordinate));

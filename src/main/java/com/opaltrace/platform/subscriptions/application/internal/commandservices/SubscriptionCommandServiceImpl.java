@@ -6,6 +6,7 @@ import com.opaltrace.platform.mineralextraction.domain.model.valueobjects.BatchS
 import com.opaltrace.platform.mineralextraction.domain.repositories.MineralBatchRepository;
 import com.opaltrace.platform.shared.application.result.ApplicationError;
 import com.opaltrace.platform.shared.application.result.Result;
+import com.opaltrace.platform.subscriptions.application.PaymentGatewayService;
 import com.opaltrace.platform.subscriptions.application.commandservices.SubscriptionCommandService;
 import com.opaltrace.platform.subscriptions.domain.model.aggregates.Subscription;
 import com.opaltrace.platform.subscriptions.domain.model.commands.*;
@@ -25,13 +26,16 @@ public class SubscriptionCommandServiceImpl implements SubscriptionCommandServic
     private final SubscriptionRepository subscriptionRepository;
     private final MineralBatchRepository mineralBatchRepository;
     private final UserRepository userRepository;
+    private final PaymentGatewayService paymentGatewayService;
 
     public SubscriptionCommandServiceImpl(SubscriptionRepository subscriptionRepository,
                                           MineralBatchRepository mineralBatchRepository,
-                                          UserRepository userRepository) {
+                                          UserRepository userRepository,
+                                          PaymentGatewayService paymentGatewayService) {
         this.subscriptionRepository = subscriptionRepository;
         this.mineralBatchRepository = mineralBatchRepository;
         this.userRepository = userRepository;
+        this.paymentGatewayService = paymentGatewayService;
     }
 
     @Override
@@ -43,6 +47,12 @@ public class SubscriptionCommandServiceImpl implements SubscriptionCommandServic
                     return Result.failure(ApplicationError.conflict("Subscription",
                             "User already has an active subscription"));
                 }
+            }
+
+            var paymentResult = paymentGatewayService.charge(
+                    command.paymentMethodToken(), command.amount(), command.planTier());
+            if (!paymentResult.success()) {
+                return Result.failure(ApplicationError.paymentDeclined(paymentResult.declineReason()));
             }
 
             var subscription = new Subscription(command);
@@ -88,6 +98,12 @@ public class SubscriptionCommandServiceImpl implements SubscriptionCommandServic
             long daysLeft = LocalDate.now().until(subscription.getNextBillingDate()).getDays();
             double proratedAmount = (daysLeft / 30.0) * (newPrice - previousPrice);
             if (proratedAmount < 0) proratedAmount = 0;
+
+            String token = command.paymentMethodToken() != null ? command.paymentMethodToken() : "tok_default";
+            var paymentResult = paymentGatewayService.charge(token, proratedAmount, command.newTier());
+            if (!paymentResult.success()) {
+                return Result.failure(ApplicationError.paymentDeclined(paymentResult.declineReason()));
+            }
 
             subscription.upgradePlan(command.newTier());
 
