@@ -7,6 +7,7 @@ import com.opaltrace.platform.iam.domain.model.commands.RegisterConsumerUserComm
 import com.opaltrace.platform.iam.domain.model.commands.RegisterEnterpriseUserCommand;
 import com.opaltrace.platform.iam.domain.model.commands.ResetPasswordCommand;
 import com.opaltrace.platform.iam.domain.model.commands.SignInCommand;
+import com.opaltrace.platform.iam.domain.model.commands.UpdateProfileCommand;
 import com.opaltrace.platform.shared.application.result.ApplicationError;
 import com.opaltrace.platform.shared.application.result.Result;
 
@@ -17,4 +18,5 @@ public interface UserCommandService {
     Result<Long, ApplicationError> handle(ChangePasswordCommand command);
     Result<String, ApplicationError> handle(ForgotPasswordCommand command);
     Result<Long, ApplicationError> handle(ResetPasswordCommand command);
+    Result<User, ApplicationError> handle(UpdateProfileCommand command);
 }

@@ -3,6 +3,7 @@ package com.opaltrace.platform.iam.application.internal.commandservices;
 import com.opaltrace.platform.iam.application.commandservices.UserCommandService;
 import com.opaltrace.platform.iam.domain.model.aggregates.User;
 import com.opaltrace.platform.iam.domain.model.commands.*;
+import com.opaltrace.platform.iam.domain.model.valueobjects.EmailAddress;
 import com.opaltrace.platform.iam.domain.model.valueobjects.HashedPassword;
 import com.opaltrace.platform.iam.domain.repositories.UserRepository;
 import com.opaltrace.platform.shared.application.result.ApplicationError;
@@ -103,6 +104,29 @@ public class UserCommandServiceImpl implements UserCommandService {
             return Result.failure(ApplicationError.validationError("change-password", e.getMessage()));
         } catch (Exception e) {
             return Result.failure(ApplicationError.unexpected("change-password", e.getMessage()));
+        }
+    }
+
+    @Override
+    public Result<User, ApplicationError> handle(UpdateProfileCommand command) {
+        var userOpt = userRepository.findById(command.userId());
+        if (userOpt.isEmpty())
+            return Result.failure(ApplicationError.notFound("User", command.userId().toString()));
+
+        var user = userOpt.get();
+
+        boolean emailChanged = !user.getEmail().value().equals(command.email());
+        if (emailChanged && userRepository.existsByEmail(command.email()))
+            return Result.failure(ApplicationError.conflict("User", "Email '%s' is already registered".formatted(command.email())));
+
+        try {
+            user.updateProfile(new EmailAddress(command.email()), command.firstName(), command.lastName(), command.gender());
+            userRepository.save(user);
+            return Result.success(user);
+        } catch (IllegalArgumentException e) {
+            return Result.failure(ApplicationError.validationError("update-profile", e.getMessage()));
+        } catch (Exception e) {
+            return Result.failure(ApplicationError.unexpected("update-profile", e.getMessage()));
         }
     }
 
