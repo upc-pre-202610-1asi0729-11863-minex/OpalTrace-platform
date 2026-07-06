@@ -15,6 +15,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,7 +45,10 @@ public class ProductVerificationController {
         String ip = resource != null && resource.verifierIp() != null
                 ? resource.verifierIp()
                 : request.getRemoteAddr();
-        var command = new VerifyProductAuthenticityCommand(certificateId, ip);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Long consumerId = (auth != null && auth.getPrincipal() instanceof Long)
+                ? (Long) auth.getPrincipal() : null;
+        var command = new VerifyProductAuthenticityCommand(certificateId, ip, consumerId);
         var result = commandService.handle(command);
         return ResponseEntityAssembler.toResponseEntityFromResult(
                 result, ProductVerificationResourceFromEntityAssembler::toResource, HttpStatus.OK);
