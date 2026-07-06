@@ -12,5 +12,6 @@ public record AuthenticatedUserResource(
         UserSegment segment,
         UserRole role,
         PlanTier planTier,
-        String token
+        String token,
+        String gender
 ) {}

@@ -71,6 +71,7 @@ public class User extends AbstractDomainAggregateRoot<User> {
         this.planTier = PlanTier.GOLD;
         this.active = true;
         this.failedLoginAttempts = 0;
+        this.gender = command.gender();
         registerDomainEvent(new UserRegisteredEvent(null, command.email(), command.segment()));
     }
 
@@ -83,6 +84,7 @@ public class User extends AbstractDomainAggregateRoot<User> {
         this.planTier = PlanTier.SILVER;
         this.active = true;
         this.failedLoginAttempts = 0;
+        this.gender = command.gender();
         registerDomainEvent(new UserRegisteredEvent(null, command.email(), UserSegment.CONSUMER));
     }
 

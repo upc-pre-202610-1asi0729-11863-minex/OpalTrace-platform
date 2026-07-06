@@ -6,5 +6,6 @@ public record RegisterConsumerUserCommand(
         @NotBlank String email,
         @NotBlank String password,
         @NotBlank String fullName,
-        @NotBlank String cardNumber
+        @NotBlank String cardNumber,
+        String gender
 ) {}

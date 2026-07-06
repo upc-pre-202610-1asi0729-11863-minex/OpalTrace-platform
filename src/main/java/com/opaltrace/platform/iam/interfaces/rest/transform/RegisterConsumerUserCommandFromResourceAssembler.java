@@ -12,7 +12,8 @@ public final class RegisterConsumerUserCommandFromResourceAssembler {
                 resource.email(),
                 resource.password(),
                 resource.fullName(),
-                resource.cardNumber()
+                resource.cardNumber(),
+                resource.gender()
         );
     }
 }

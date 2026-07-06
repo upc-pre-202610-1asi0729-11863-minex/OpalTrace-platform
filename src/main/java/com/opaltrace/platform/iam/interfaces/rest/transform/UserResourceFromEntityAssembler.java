@@ -34,7 +34,8 @@ public final class UserResourceFromEntityAssembler {
                 user.getSegment(),
                 user.getRole(),
                 user.getPlanTier(),
-                token
+                token,
+                user.getGender()
         );
     }
 }
