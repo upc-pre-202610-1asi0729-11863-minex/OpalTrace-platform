@@ -16,11 +16,13 @@ import com.opaltrace.platform.subscriptions.domain.model.valueobjects.PaymentSta
 import com.opaltrace.platform.subscriptions.domain.model.valueobjects.SubscriptionStatus;
 import com.opaltrace.platform.subscriptions.domain.repositories.SubscriptionRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
+@Transactional
 public class SubscriptionCommandServiceImpl implements SubscriptionCommandService {
 
     private final SubscriptionRepository subscriptionRepository;
