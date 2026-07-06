@@ -82,4 +82,24 @@ public record ApplicationError(
                 "Unauthorized: %s".formatted(context),
                 reason);
     }
+
+    /**
+     * Plan tier insufficient: operation requires a higher subscription tier
+     */
+    public static ApplicationError planTierInsufficient(String requiredTier) {
+        return new ApplicationError(
+                "PLAN_TIER_INSUFFICIENT",
+                "Current plan does not allow this operation",
+                "Required tier: %s".formatted(requiredTier));
+    }
+
+    /**
+     * Payment declined: external payment gateway rejected the transaction
+     */
+    public static ApplicationError paymentDeclined(String reason) {
+        return new ApplicationError(
+                "PAYMENT_DECLINED",
+                "Payment could not be processed",
+                reason);
+    }
 }

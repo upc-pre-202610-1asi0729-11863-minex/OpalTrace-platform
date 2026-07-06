@@ -117,6 +117,8 @@ public final class ErrorResponseAssembler {
             case "VALIDATION_ERROR" -> HttpStatus.BAD_REQUEST;
             case String s when s.endsWith("_NOT_FOUND") -> HttpStatus.NOT_FOUND;
             case "BUSINESS_RULE_VIOLATION" -> HttpStatusCode.valueOf(422);
+            case "PLAN_TIER_INSUFFICIENT" -> HttpStatusCode.valueOf(422);
+            case "PAYMENT_DECLINED" -> HttpStatus.PAYMENT_REQUIRED;
             case String s when s.endsWith("_CONFLICT") -> HttpStatus.CONFLICT;
             case "UNAUTHORIZED_ERROR" -> HttpStatus.UNAUTHORIZED;
             case "UNEXPECTED_ERROR" -> HttpStatus.INTERNAL_SERVER_ERROR;

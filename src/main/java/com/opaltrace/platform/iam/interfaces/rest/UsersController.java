@@ -105,4 +105,21 @@ public class UsersController {
                 .toList();
         return ResponseEntity.ok(users);
     }
+
+    @PutMapping("/{userId}/password")
+    @Operation(summary = "Change password", description = "Changes the authenticated user's password")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password changed successfully"),
+            @ApiResponse(responseCode = "401", description = "Current password is incorrect"),
+            @ApiResponse(responseCode = "400", description = "New password does not meet requirements"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<?> changePassword(
+            @PathVariable @Parameter(description = "User unique identifier", required = true) Long userId,
+            @Valid @RequestBody ChangePasswordResource resource) {
+        var command = new com.opaltrace.platform.iam.domain.model.commands.ChangePasswordCommand(
+                userId, resource.currentPassword(), resource.newPassword());
+        var result = userCommandService.handle(command);
+        return ResponseEntityAssembler.toResponseEntityFromResult(result, id -> java.util.Map.of("userId", id), HttpStatus.OK);
+    }
 }
