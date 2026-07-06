@@ -110,7 +110,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     public Result<String, ApplicationError> handle(ForgotPasswordCommand command) {
         var userOpt = userRepository.findByEmail(command.email());
         if (userOpt.isEmpty())
-            return Result.success("If this email is registered, a reset link has been sent");
+            return Result.failure(ApplicationError.notFound("User", command.email()));
 
         var token = UUID.randomUUID().toString().replace("-", "");
         pendingResets.put(token, new PendingReset(command.email(), Instant.now().plusSeconds(900)));
