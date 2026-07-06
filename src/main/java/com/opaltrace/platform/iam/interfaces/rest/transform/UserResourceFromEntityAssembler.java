@@ -31,6 +31,7 @@ public final class UserResourceFromEntityAssembler {
                 user.getEmail().value(),
                 user.getFullName(),
                 user.getCompanyName(),
+                user.getRuc() != null ? user.getRuc().value() : "",
                 user.getSegment(),
                 user.getRole(),
                 user.getPlanTier(),

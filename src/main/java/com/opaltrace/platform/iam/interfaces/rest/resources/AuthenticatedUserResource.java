@@ -9,6 +9,7 @@ public record AuthenticatedUserResource(
         String email,
         String fullName,
         String companyName,
+        String ruc,
         UserSegment segment,
         UserRole role,
         PlanTier planTier,

@@ -15,7 +15,8 @@ public final class RegisterEnterpriseUserCommandFromResourceAssembler {
                 resource.ruc(),
                 resource.segment(),
                 resource.cardNumber(),
-                resource.gender()
+                resource.gender(),
+                resource.planTier()
         );
     }
 }

@@ -68,7 +68,7 @@ public class User extends AbstractDomainAggregateRoot<User> {
         this.ruc = new RucNumber(command.ruc());
         this.segment = command.segment();
         this.role = UserRole.SUPERVISOR;
-        this.planTier = PlanTier.GOLD;
+        this.planTier = command.planTier() != null ? command.planTier() : PlanTier.GOLD;
         this.active = true;
         this.failedLoginAttempts = 0;
         this.gender = command.gender();
@@ -81,7 +81,7 @@ public class User extends AbstractDomainAggregateRoot<User> {
         this.fullName = command.fullName();
         this.segment = UserSegment.CONSUMER;
         this.role = UserRole.CONSUMER;
-        this.planTier = PlanTier.SILVER;
+        this.planTier = command.planTier() != null ? command.planTier() : PlanTier.SILVER;
         this.active = true;
         this.failedLoginAttempts = 0;
         this.gender = command.gender();

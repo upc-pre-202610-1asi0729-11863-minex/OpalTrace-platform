@@ -1,5 +1,6 @@
 package com.opaltrace.platform.iam.interfaces.rest.resources;
 
+import com.opaltrace.platform.iam.domain.model.valueobjects.PlanTier;
 import com.opaltrace.platform.iam.domain.model.valueobjects.UserSegment;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,5 +14,6 @@ public record RegisterEnterpriseUserResource(
         @NotBlank @Pattern(regexp = "\\d{11}", message = "RUC must be exactly 11 digits") String ruc,
         @NotNull UserSegment segment,
         @NotBlank String cardNumber,
-        @Pattern(regexp = "M|F", message = "Gender must be M or F") String gender
+        @Pattern(regexp = "M|F", message = "Gender must be M or F") String gender,
+        PlanTier planTier
 ) {}
