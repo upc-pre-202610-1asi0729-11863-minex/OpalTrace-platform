@@ -13,5 +13,8 @@ public record UserResource(
         UserSegment segment,
         UserRole role,
         PlanTier planTier,
-        boolean active
+        boolean active,
+        String firstName,
+        String lastName,
+        String gender
 ) {}

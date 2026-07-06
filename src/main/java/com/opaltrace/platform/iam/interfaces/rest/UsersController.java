@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -121,5 +122,28 @@ public class UsersController {
                 userId, resource.currentPassword(), resource.newPassword());
         var result = userCommandService.handle(command);
         return ResponseEntityAssembler.toResponseEntityFromResult(result, id -> java.util.Map.of("userId", id), HttpStatus.OK);
+    }
+
+    @PutMapping("/{userId}/profile")
+    @Operation(summary = "Update profile", description = "Updates the authenticated user's own profile data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profile updated successfully",
+                    content = @Content(schema = @Schema(implementation = UserResource.class))),
+            @ApiResponse(responseCode = "403", description = "Cannot edit another user's profile"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "409", description = "Email already in use")
+    })
+    public ResponseEntity<?> updateProfile(
+            @PathVariable @Parameter(description = "User unique identifier", required = true) Long userId,
+            @AuthenticationPrincipal Long authenticatedUserId,
+            @Valid @RequestBody UpdateProfileResource resource) {
+        if (!userId.equals(authenticatedUserId))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        var command = new com.opaltrace.platform.iam.domain.model.commands.UpdateProfileCommand(
+                userId, resource.firstName(), resource.lastName(), resource.email(), resource.gender());
+        var result = userCommandService.handle(command);
+        return ResponseEntityAssembler.toResponseEntityFromResult(
+                result, UserResourceFromEntityAssembler::toResourceFromEntity, HttpStatus.OK);
     }
 }

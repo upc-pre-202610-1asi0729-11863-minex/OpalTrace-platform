@@ -18,7 +18,10 @@ public final class UserResourceFromEntityAssembler {
                 user.getSegment(),
                 user.getRole(),
                 user.getPlanTier(),
-                user.isActive()
+                user.isActive(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getGender()
         );
     }
 
