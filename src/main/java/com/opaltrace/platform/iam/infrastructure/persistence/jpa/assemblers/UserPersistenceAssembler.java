@@ -25,7 +25,10 @@ public final class UserPersistenceAssembler {
                 entity.getPlanTier(),
                 entity.isActive(),
                 entity.getFailedLoginAttempts(),
-                entity.getLockedUntil()
+                entity.getLockedUntil(),
+                entity.getFirstName(),
+                entity.getLastName(),
+                entity.getGender()
         );
         return user;
     }
@@ -45,6 +48,9 @@ public final class UserPersistenceAssembler {
         entity.setActive(user.isActive());
         entity.setFailedLoginAttempts(user.getFailedLoginAttempts());
         entity.setLockedUntil(user.getLockedUntil());
+        entity.setFirstName(user.getFirstName());
+        entity.setLastName(user.getLastName());
+        entity.setGender(user.getGender());
         return entity;
     }
 }

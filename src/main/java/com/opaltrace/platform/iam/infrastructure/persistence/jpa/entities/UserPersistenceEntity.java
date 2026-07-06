@@ -53,4 +53,13 @@ public class UserPersistenceEntity extends AuditableAbstractPersistenceEntity {
 
     @Column
     private LocalDateTime lockedUntil;
+
+    @Column
+    private String firstName;
+
+    @Column
+    private String lastName;
+
+    @Column
+    private String gender;
 }
