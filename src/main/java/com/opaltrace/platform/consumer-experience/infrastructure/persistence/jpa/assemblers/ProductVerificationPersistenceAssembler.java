@@ -18,7 +18,8 @@ public final class ProductVerificationPersistenceAssembler {
                 entity.getVerifierIp(),
                 entity.getVerifiedAt(),
                 entity.getProductId(),
-                entity.getBatchId()
+                entity.getBatchId(),
+                entity.getConsumerId()
         );
         return verification;
     }
@@ -35,6 +36,7 @@ public final class ProductVerificationPersistenceAssembler {
         entity.setVerifiedAt(verification.getVerifiedAt());
         entity.setProductId(verification.getProductId());
         entity.setBatchId(verification.getBatchId());
+        entity.setConsumerId(verification.getConsumerId());
         return entity;
     }
 }

@@ -37,4 +37,7 @@ public class ProductVerificationPersistenceEntity extends AuditableAbstractPersi
 
     @Column(name = "batch_id", length = 20)
     private String batchId;
+
+    @Column(name = "consumer_id")
+    private Long consumerId;
 }

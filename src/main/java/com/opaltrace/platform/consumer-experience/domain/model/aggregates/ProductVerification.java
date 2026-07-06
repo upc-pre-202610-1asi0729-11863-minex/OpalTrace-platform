@@ -19,6 +19,7 @@ public class ProductVerification extends AbstractDomainAggregateRoot<ProductVeri
     private LocalDateTime verifiedAt;
     private Long productId;
     private String batchId;
+    private Long consumerId;
 
     public ProductVerification() {
     }
@@ -32,6 +33,7 @@ public class ProductVerification extends AbstractDomainAggregateRoot<ProductVeri
         this.verifiedAt = LocalDateTime.now();
         this.productId = productId;
         this.batchId = batchId;
+        this.consumerId = cmd.consumerId();
         registerDomainEvent(new AuthenticityVerifiedEvent(
                 cmd.certificateId(), result, productId, cmd.verifierIp(), this.verifiedAt));
     }
@@ -42,7 +44,7 @@ public class ProductVerification extends AbstractDomainAggregateRoot<ProductVeri
 
     public void reconstitute(Long id, String certificateId, VerificationResult verificationResult,
                              String failureReason, String verifierIp, LocalDateTime verifiedAt,
-                             Long productId, String batchId) {
+                             Long productId, String batchId, Long consumerId) {
         this.id = id;
         this.certificateId = certificateId;
         this.verificationResult = verificationResult;
@@ -51,5 +53,6 @@ public class ProductVerification extends AbstractDomainAggregateRoot<ProductVeri
         this.verifiedAt = verifiedAt;
         this.productId = productId;
         this.batchId = batchId;
+        this.consumerId = consumerId;
     }
 }

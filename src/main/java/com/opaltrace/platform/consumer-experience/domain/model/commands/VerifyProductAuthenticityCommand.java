@@ -4,6 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 
 public record VerifyProductAuthenticityCommand(
         @NotBlank String certificateId,
-        String verifierIp
+        String verifierIp,
+        Long consumerId
 ) {
+    public VerifyProductAuthenticityCommand(String certificateId, String verifierIp) {
+        this(certificateId, verifierIp, null);
+    }
 }

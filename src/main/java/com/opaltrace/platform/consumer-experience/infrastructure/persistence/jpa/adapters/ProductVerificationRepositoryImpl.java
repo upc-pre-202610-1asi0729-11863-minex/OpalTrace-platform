@@ -1,6 +1,7 @@
 package com.opaltrace.platform.consumerexperience.infrastructure.persistence.jpa.adapters;
 
 import com.opaltrace.platform.consumerexperience.domain.model.aggregates.ProductVerification;
+import com.opaltrace.platform.consumerexperience.domain.model.valueobjects.VerificationResult;
 import com.opaltrace.platform.consumerexperience.domain.repositories.ProductVerificationRepository;
 import com.opaltrace.platform.consumerexperience.infrastructure.persistence.jpa.assemblers.ProductVerificationPersistenceAssembler;
 import com.opaltrace.platform.consumerexperience.infrastructure.persistence.jpa.repositories.ProductVerificationPersistenceRepository;
@@ -43,5 +44,19 @@ public class ProductVerificationRepositoryImpl implements ProductVerificationRep
     @Override
     public long countRecentVerifications(String certificateId, LocalDateTime since) {
         return persistenceRepository.countRecentVerifications(certificateId, since);
+    }
+
+    @Override
+    public List<ProductVerification> findByConsumerIdAndVerificationResult(Long consumerId, VerificationResult verificationResult) {
+        return persistenceRepository.findByConsumerIdAndVerificationResult(consumerId, verificationResult).stream()
+                .map(ProductVerificationPersistenceAssembler::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductVerification> findByConsumerId(Long consumerId) {
+        return persistenceRepository.findByConsumerId(consumerId).stream()
+                .map(ProductVerificationPersistenceAssembler::toDomain)
+                .collect(Collectors.toList());
     }
 }
