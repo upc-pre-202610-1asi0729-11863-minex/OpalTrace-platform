@@ -11,5 +11,6 @@ public record RegisterEnterpriseUserResource(
         @NotBlank @Size(min = 8, message = "Password must be at least 8 characters") String password,
         @NotBlank String companyName,
         @NotBlank @Pattern(regexp = "\\d{11}", message = "RUC must be exactly 11 digits") String ruc,
-        @NotNull UserSegment segment
+        @NotNull UserSegment segment,
+        @NotBlank String cardNumber
 ) {}

@@ -11,7 +11,8 @@ public final class RegisterConsumerUserCommandFromResourceAssembler {
         return new RegisterConsumerUserCommand(
                 resource.email(),
                 resource.password(),
-                resource.fullName()
+                resource.fullName(),
+                resource.cardNumber()
         );
     }
 }

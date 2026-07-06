@@ -13,7 +13,8 @@ public final class RegisterEnterpriseUserCommandFromResourceAssembler {
                 resource.password(),
                 resource.companyName(),
                 resource.ruc(),
-                resource.segment()
+                resource.segment(),
+                resource.cardNumber()
         );
     }
 }

@@ -17,6 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class UserCommandServiceImpl implements UserCommandService {
 
+    private static final String ACCEPTED_CARD = "4111111111111111";
+
     private final UserRepository userRepository;
     private final Map<String, PendingReset> pendingResets = new ConcurrentHashMap<>();
 
@@ -28,6 +30,8 @@ public class UserCommandServiceImpl implements UserCommandService {
 
     @Override
     public Result<Long, ApplicationError> handle(RegisterEnterpriseUserCommand command) {
+        if (!ACCEPTED_CARD.equals(command.cardNumber()))
+            return Result.failure(ApplicationError.validationError("register-enterprise-user", "Payment card not accepted"));
         if (userRepository.existsByEmail(command.email()))
             return Result.failure(ApplicationError.conflict("User", "Email '%s' is already registered".formatted(command.email())));
         try {
@@ -43,6 +47,8 @@ public class UserCommandServiceImpl implements UserCommandService {
 
     @Override
     public Result<Long, ApplicationError> handle(RegisterConsumerUserCommand command) {
+        if (!ACCEPTED_CARD.equals(command.cardNumber()))
+            return Result.failure(ApplicationError.validationError("register-consumer-user", "Payment card not accepted"));
         if (userRepository.existsByEmail(command.email()))
             return Result.failure(ApplicationError.conflict("User", "Email '%s' is already registered".formatted(command.email())));
         try {

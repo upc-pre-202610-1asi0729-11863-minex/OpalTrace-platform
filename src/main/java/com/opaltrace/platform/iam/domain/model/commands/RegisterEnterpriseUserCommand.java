@@ -9,5 +9,6 @@ public record RegisterEnterpriseUserCommand(
         @NotBlank String password,
         @NotBlank String companyName,
         @NotBlank String ruc,
-        @NotNull UserSegment segment
+        @NotNull UserSegment segment,
+        @NotBlank String cardNumber
 ) {}
