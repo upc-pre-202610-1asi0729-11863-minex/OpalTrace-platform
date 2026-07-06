@@ -24,6 +24,9 @@ public class User extends AbstractDomainAggregateRoot<User> {
     private boolean active;
     private int failedLoginAttempts;
     private LocalDateTime lockedUntil;
+    private String firstName;
+    private String lastName;
+    private String gender;
 
     public User() {}
 
@@ -38,7 +41,10 @@ public class User extends AbstractDomainAggregateRoot<User> {
             PlanTier planTier,
             boolean active,
             int failedLoginAttempts,
-            java.time.LocalDateTime lockedUntil) {
+            java.time.LocalDateTime lockedUntil,
+            String firstName,
+            String lastName,
+            String gender) {
         this.email = email;
         this.password = password;
         this.fullName = fullName;
@@ -50,6 +56,9 @@ public class User extends AbstractDomainAggregateRoot<User> {
         this.active = active;
         this.failedLoginAttempts = failedLoginAttempts;
         this.lockedUntil = lockedUntil;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = gender;
     }
 
     public User(RegisterEnterpriseUserCommand command) {
@@ -107,5 +116,12 @@ public class User extends AbstractDomainAggregateRoot<User> {
 
     public void upgradePlan(PlanTier newTier) {
         this.planTier = newTier;
+    }
+
+    public void updateProfile(EmailAddress email, String firstName, String lastName, String gender) {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = gender;
     }
 }
