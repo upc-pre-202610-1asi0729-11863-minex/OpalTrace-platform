@@ -56,6 +56,10 @@ public class TokenService {
         return getClaims(token).getSubject();
     }
 
+    public Long extractUserId(String token) {
+        return getClaims(token).get("userId", Long.class);
+    }
+
     public String extractPlanTier(String token) {
         return getClaims(token).get("planTier", String.class);
     }
