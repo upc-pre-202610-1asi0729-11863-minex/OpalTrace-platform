@@ -115,12 +115,14 @@ public class UserCommandServiceImpl implements UserCommandService {
 
         var user = userOpt.get();
 
-        boolean emailChanged = !user.getEmail().value().equals(command.email());
+        boolean emailProvided = command.email() != null && !command.email().isBlank();
+        boolean emailChanged = emailProvided && !user.getEmail().value().equals(command.email());
         if (emailChanged && userRepository.existsByEmail(command.email()))
             return Result.failure(ApplicationError.conflict("User", "Email '%s' is already registered".formatted(command.email())));
 
         try {
-            user.updateProfile(new EmailAddress(command.email()), command.firstName(), command.lastName(), command.gender());
+            var emailToUse = emailProvided ? new EmailAddress(command.email()) : user.getEmail();
+            user.updateProfile(emailToUse, command.firstName(), command.lastName(), command.gender());
             userRepository.save(user);
             return Result.success(user);
         } catch (IllegalArgumentException e) {

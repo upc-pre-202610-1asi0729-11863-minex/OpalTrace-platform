@@ -125,5 +125,6 @@ public class User extends AbstractDomainAggregateRoot<User> {
         this.firstName = firstName;
         this.lastName = lastName;
         this.gender = gender;
+        this.fullName = "%s %s".formatted(firstName, lastName).trim();
     }
 }

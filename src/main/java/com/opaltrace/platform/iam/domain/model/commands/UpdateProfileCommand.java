@@ -6,6 +6,6 @@ public record UpdateProfileCommand(
         Long userId,
         @NotBlank String firstName,
         @NotBlank String lastName,
-        @NotBlank String email,
+        String email,
         String gender
 ) {}
